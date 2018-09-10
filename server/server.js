@@ -24,27 +24,16 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-// emit an event
-// socket.emit('newEmail', {
-//     from: 'mike@example.com',
-//     text: 'Hey, whassup!',
-//     createdAt: 123
-// });    
 
-// send a message to all users
-socket.emit('newMessage', {
-    from: 'mrED',
-    text: 'Hey Wilbur!!!',
-    createdAt: 456
-});    
 
-// socket.on('createEmail', (newEmail) => {
-//     console.log('createEmail', newEmail);
-// });
-
-// listen for message from user
+// listen for message from user and broadcast
 socket.on('createMessage', (message) => {
         console.log('createMessage ', message);
+        io.emit('newMessage', {
+            from: message.from,
+            text: message.text,
+            createdAt: new Date().getTime()
+        });
 });
 
 //  add event listener for disconnect from browser
@@ -61,10 +50,25 @@ server.listen(port, () => {
 
 
 
-
-
-
 // route handler
 // app.get('/', (req, res) => {
 //     res.send('<p> Welcome to my chat app! </p>');
 // });
+
+// emit an event
+// socket.emit('newEmail', {
+//     from: 'mike@example.com',
+//     text: 'Hey, whassup!',
+//     createdAt: 123
+// });    
+
+// socket.on('createEmail', (newEmail) => {
+//     console.log('createEmail', newEmail);
+// });
+
+// send a message to all users // removed when broadcast added above
+// socket.emit('newMessage', {
+//     from: 'mrED',
+//     text: 'Hey Wilbur!!!',
+//     createdAt: 456
+// });    

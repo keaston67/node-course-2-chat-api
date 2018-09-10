@@ -12,18 +12,6 @@ var socket = io();
     //  use normal functions per Andrews video
     socket.on('connect', function() {
             console.log('connected to server');
-
-    //  as soon as connect will emit this event
-        // socket.emit('createEmail', {
-        //     to: 'jen@example.com',
-        //     text: 'Hey, this is Kim'
-        // });
-
-    // emit a new message
-        socket.emit('createMessage', {
-            from: 'Wilbur',
-            text: 'What the!, a talking horse!!!!'
-            });
     });
 
         socket.on('disconnect', function() {
@@ -39,3 +27,15 @@ var socket = io();
     // socket.on('newEmail', function(email) {
     //     console.log('New email', email);
     // });
+
+    //  as soon as connect will emit this event
+        // socket.emit('createEmail', {
+        //     to: 'jen@example.com',
+        //     text: 'Hey, this is Kim'
+        // });
+
+ // emit a new message, removed when broadcast added in server.js
+        // socket.emit('createMessage', {
+        //     from: 'Wilbur',
+        //     text: 'What the!, a talking horse!!!!'
+        //     });
