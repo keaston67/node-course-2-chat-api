@@ -24,7 +24,18 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-
+// socket.emit from admin - welcome to the chat app
+socket.emit('newMessage', {
+    from: 'Admin',
+    text: 'Welcome to the chat app'
+    })
+    
+// socket.broadcast.emit from admin saying new user joined
+    socket.broadcast.emit('newMessage', {
+        from: 'Admin',
+        text: 'New user has joined',
+        createdAt: new Date().getTime()
+}); 
 
 // listen for message from user and broadcast
 socket.on('createMessage', (message) => {
@@ -34,6 +45,11 @@ socket.on('createMessage', (message) => {
             text: message.text,
             createdAt: new Date().getTime()
         });
+        // socket.broadcast.emit('newMessage', {
+        //     from: message.from,
+        //     text: message.text,
+        //     createdAt: new Date().getTime()
+        // });
 });
 
 //  add event listener for disconnect from browser

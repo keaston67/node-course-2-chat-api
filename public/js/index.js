@@ -14,14 +14,18 @@ var socket = io();
             console.log('connected to server');
     });
 
-        socket.on('disconnect', function() {
-        console.log('Disconnected from server');
+    socket.on('disconnect', function() {
+            console.log('Disconnected from server');
     });
 
     // listen for new message
     socket.on('newMessage', function(message) {
         console.log('New message from server ', message);
     });
+
+//     socket.on('newUser', function() {
+//         console.log('connected to server');
+// });
 
     
     // socket.on('newEmail', function(email) {
