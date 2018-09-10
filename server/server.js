@@ -24,6 +24,29 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
     console.log('New user connected');
 
+// emit an event
+// socket.emit('newEmail', {
+//     from: 'mike@example.com',
+//     text: 'Hey, whassup!',
+//     createdAt: 123
+// });    
+
+// send a message to all users
+socket.emit('newMessage', {
+    from: 'mrED',
+    text: 'Hey Wilbur!!!',
+    createdAt: 456
+});    
+
+// socket.on('createEmail', (newEmail) => {
+//     console.log('createEmail', newEmail);
+// });
+
+// listen for message from user
+socket.on('createMessage', (message) => {
+        console.log('createMessage ', message);
+});
+
 //  add event listener for disconnect from browser
 socket.on('disconnect', () => {
     console.log('User was disconnected');
@@ -34,6 +57,7 @@ socket.on('disconnect', () => {
 server.listen(port, () => {
     console.log(`Server running on port ${port}`)
 });
+
 
 
 
