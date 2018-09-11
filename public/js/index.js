@@ -25,7 +25,8 @@ socket.on('newMessage', function(message) {
     // var li = jQuery('<li></li>')
     // li.text(`${message.from}: ${message.text}`);
     $('#messages').append(`<li>${message.from}: ${message.text}</li>`);
-    $('[placeholder]').val(" ");
+    // My code here clears the message text field
+    // $('[placeholder]').val(" ");
 });
 
     // listen for new location message
@@ -41,15 +42,19 @@ socket.on('newMessage', function(message) {
          jQuery('#messages').append(li);
      });
 
+var messageTextBox = jQuery('[name=message]');
+
 // jquery form action
 jQuery('#message-form').on('submit', function (e) {
     // override default page refresh
     e.preventDefault();
     socket.emit('createMessage', {
         from: 'User',
-        text: jQuery('[name=message]').val()
+        text: jQuery(messageTextBox).val()
+        // acknowledgement callback
     }, function() {   
-    });
+        jQuery(messageTextBox).val('')
+    }); 
 });
 
 // geolocation
@@ -58,13 +63,16 @@ locationButton.on('click', function () {
     if (!navigator.geolocation) {
         return alert('Geolocation not supported by your browser')
     }
+    locationButton.attr('disabled', 'disabled').text('Sending location...');
     navigator.geolocation.getCurrentPosition(function(position){
+        locationButton.removeAttr('disabled').text('Send location');
         // console.log(position);
         socket.emit('createLocationMessage', {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
         });
     }, function (){
+        locationButton.removeAttr('disabled').text('Send location');
         alert('Unable to fetch location');
     })
 });
