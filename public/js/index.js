@@ -21,7 +21,24 @@ var socket = io();
     // listen for new message
     socket.on('newMessage', function(message) {
         console.log('New message from server ', message);
+        var li = jQuery('<li></li>')
+        li.text(`${message.from}: ${message.text}`);
+        jQuery('#messages').append(li);
     });
+
+// jquery form action
+jQuery('#message-form').on('submit', function (e) {
+    // override default page refresh
+    e.preventDefault();
+    socket.emit('createMessage', {
+        from: 'User',
+        text: jQuery('[name=message]').val()
+    }, function() {   
+    });
+});
+
+
+// ---- OLD CODE -------
 
 //     socket.on('newUser', function() {
 //         console.log('connected to server');
@@ -43,3 +60,13 @@ var socket = io();
         //     from: 'Wilbur',
         //     text: 'What the!, a talking horse!!!!'
         //     });
+
+
+// Set up a standard (client) event emitter - previously emitting in console
+// socket.emit('createMessage', {
+//     from: 'Frank',
+//     text: 'I did it my way!'
+// }, function (data) {
+// // Add 3rd argument - a callback for acknowledgement on client
+//     console.log('Got it ', data);
+// });

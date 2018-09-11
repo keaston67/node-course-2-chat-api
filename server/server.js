@@ -31,10 +31,11 @@ socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
 // socket.broadcast.emit from admin saying new user joined
 socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user has joined')); 
 
-// listen for message from user and broadcast
-socket.on('createMessage', (message) => {
+// listen for message from user and broadcast, add callback for acknowled
+socket.on('createMessage', (message, callback) => {
         console.log('createMessage ', message);
         io.emit('newMessage', generateMessage(message.from, message.text));
+        callback('This is from the server.');
         // socket.broadcast.emit('newMessage', {
         //     from: message.from,
         //     text: message.text,
