@@ -4,7 +4,8 @@ const express = require('express');
 const publicPath = path.join(__dirname, '../public');
 const socketIO = require('socket.io');
 
-const{generateMessage} = require('./utils/message');
+// add generateLocationMessage
+const{generateMessage, generateLocationMessage} = require('./utils/message');
 // add port environment variable for heroku to run
 const port = process.env.PORT || 3000;
 
@@ -25,13 +26,13 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-// socket.emit from admin - welcome to the chat app
+// socket.emit from admin - welcome to the chat app, add 
 socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
     
 // socket.broadcast.emit from admin saying new user joined
 socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user has joined')); 
 
-// listen for message from user and broadcast, add callback for acknowled
+// listen for message from user and broadcast, add callback for acknowledge
 socket.on('createMessage', (message, callback) => {
         console.log('createMessage ', message);
         io.emit('newMessage', generateMessage(message.from, message.text));
@@ -41,6 +42,12 @@ socket.on('createMessage', (message, callback) => {
         //     text: message.text,
         //     createdAt: new Date().getTime()
         // });
+});
+
+//  listen for location message and emit
+socket.on('createLocationMessage', (coords) => {
+// io.emit('newMessage', generateMessage('Admin', `${coords.latitude}, ${coords.longitude}`));
+io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
 });
 
 //  add event listener for disconnect from browser
