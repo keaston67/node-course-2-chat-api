@@ -18,13 +18,13 @@ var socket = io();
             console.log('Disconnected from server');
     });
 
-    // listen for new message
 // listen for new message
 socket.on('newMessage', function(message) {
-    console.log('New message from server ', message);
+    // console.log('New message from server ', message);
+    var formattedTime = moment(message.createdAt).format('h:mm a')
     // var li = jQuery('<li></li>')
     // li.text(`${message.from}: ${message.text}`);
-    $('#messages').append(`<li>${message.from}: ${message.text}</li>`);
+    $('#messages').append(`<li>${message.from} ${formattedTime} : ${message.text}</li>`);
     // My code here clears the message text field
     // $('[placeholder]').val(" ");
 });
@@ -32,11 +32,12 @@ socket.on('newMessage', function(message) {
     // listen for new location message
     socket.on('newLocationMessage', function(message) {
          // Andrews method
+         var formattedTime = moment(message.createdAt).format('h:mm a')
          var li = jQuery('<li></li>');
          // target = blank opens a new tab rather than existing and kick out of chatroom
          var a = jQuery('<a target="_blank">My Current Location</a>');
 
-         li.text(`${message.from}: `);
+         li.text(`${message.from} ${formattedTime} : `);
          a.attr('href', message.url);
          li.append(a);
          jQuery('#messages').append(li);
