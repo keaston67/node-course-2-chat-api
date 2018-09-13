@@ -50,7 +50,7 @@ io.to(params.room).emit('updateUserList', users.getUserList(params.room));
 // socket.broadcast.emit = to all connected to socket server except current user e.g. new user joined group
 // socket.emit = targets one specific user  e.g. welcome to the chat app
 
-//  targeting methods insode a specific room
+//  targeting methods inside a specific room
 // io.to('The Office Fans').emit = targets / emits to all in the room 'The Office Fans'
 // socket.broadcast.to('The Office Fans').emit = to all connected to the room 'The Office Fans' except current user
 // socket.emit = targets one specific user  e.g. welcome to the chat app - no change, still use to target a specific user
@@ -68,7 +68,12 @@ socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${
 // listen for message from user and broadcast, add callback for acknowledge
 socket.on('createMessage', (message, callback) => {
         console.log('createMessage ', message);
-        io.emit('newMessage', generateMessage(message.from, message.text));
+        var user = users.getUser(socket.id);
+
+        if (user && isRealString(message.text)) {
+        io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
+        }
+    
         callback();
         // socket.broadcast.emit('newMessage', {
         //     from: message.from,
@@ -79,8 +84,11 @@ socket.on('createMessage', (message, callback) => {
 
 //  listen for location message and emit
 socket.on('createLocationMessage', (coords) => {
+var user = users.getUser(socket.id);  
+if (user) {
 // io.emit('newMessage', generateMessage('Admin', `${coords.latitude}, ${coords.longitude}`));
-io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
+io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude));
+    }
 });
 
 //  add event listener for disconnect from browser

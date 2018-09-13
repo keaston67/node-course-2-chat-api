@@ -111,7 +111,7 @@ jQuery('#message-form').on('submit', function (e) {
     // override default page refresh
     e.preventDefault();
     socket.emit('createMessage', {
-        from: 'User',
+        // from: 'User',
         text: jQuery(messageTextBox).val()
         // acknowledgement callback
     }, function() {   
