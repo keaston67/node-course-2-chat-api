@@ -25,3 +25,4 @@ describe('generateLocation', () => {
         expect(location).toInclude({from});
     });
 });
+

@@ -4,8 +4,10 @@ const express = require('express');
 const publicPath = path.join(__dirname, '../public');
 const socketIO = require('socket.io');
 
-// add generateLocationMessage
 const{generateMessage, generateLocationMessage} = require('./utils/message');
+const{isRealString} = require('./utils/validation');
+const{Users} = require('./utils/users');
+
 // add port environment variable for heroku to run
 const port = process.env.PORT || 3000;
 
@@ -18,6 +20,7 @@ var app = express();
 var server = http.createServer(app);
 // add this and now ready to accept new connections
 var io = socketIO(server);
+var users = new Users();
 
 // serve a static resource / middleware
 app.use(express.static(publicPath));
@@ -26,11 +29,41 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-// socket.emit from admin - welcome to the chat app, add 
+// listen for join event, add callback for acknowledge
+// socket.io join method, special method for joining rooms
+socket.on('join', (params, callback) => {
+if(isRealString(!params.name)|| !isRealString(params.room)) {
+    callback('Name and room name are required');
+    };
+
+socket.join(params.room);
+// remove user from any previous rooms
+users.removeUser(socket.id);
+users.addUser(socket.id, params.name, params.room);
+
+io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+// socket.io leave method, special method for leaving rooms
+// socket.leave('The Office Fans');
+
+// targeting methods
+// io.emit = targets / emits to all
+// socket.broadcast.emit = to all connected to socket server except current user e.g. new user joined group
+// socket.emit = targets one specific user  e.g. welcome to the chat app
+
+//  targeting methods insode a specific room
+// io.to('The Office Fans').emit = targets / emits to all in the room 'The Office Fans'
+// socket.broadcast.to('The Office Fans').emit = to all connected to the room 'The Office Fans' except current user
+// socket.emit = targets one specific user  e.g. welcome to the chat app - no change, still use to target a specific user
+// socket.emit from admin - welcome to the chat app, add - emits to only one user
 socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
-    
+
 // socket.broadcast.emit from admin saying new user joined
-socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user has joined')); 
+socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined`)); 
+    callback();          
+});
+
+// socket.io join method, special method for joining rooms
+// socket.join(params.room);
 
 // listen for message from user and broadcast, add callback for acknowledge
 socket.on('createMessage', (message, callback) => {
@@ -53,6 +86,11 @@ io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, 
 //  add event listener for disconnect from browser
 socket.on('disconnect', () => {
     console.log('User was disconnected');
+    var user = users.removeUser(socket.id);
+    if (user) {
+        io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+        io.to(user.room).emit('newMessage', generateMessage('Admin',` ${user.name} has left. `));
+    }
     });
 });
 

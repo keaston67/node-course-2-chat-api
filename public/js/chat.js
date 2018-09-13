@@ -27,12 +27,34 @@ function scrollToBottom () {
 
     //  use normal functions per Andrews video
     socket.on('connect', function() {
-            console.log('connected to server');
+            // console.log('connected to server');
+      var params = jQuery.deparam(window.location.search);
+    //   set up emitter for join event - listener in server.js
+      socket.emit('join', params, function(err) {
+        if(err) {
+            // if err send alert and send back to root / login page
+            alert(err);
+            window.location.href = '/';
+        } else {
+            console.log('No error');
+        }
+      });
     });
 
     socket.on('disconnect', function() {
             console.log('Disconnected from server');
     });
+
+// listen for user updates
+socket.on('updateUserList', function(users) {
+console.log('Users list', users);
+var ol = jQuery('<ol></ol>');
+users.forEach(function (user) {
+ol.append(jQuery('<li></li>').text(user));
+    });
+// render list to sidebar using .html as want to completely replace not add to
+jQuery('#users').html(ol);
+});
 
 // listen for new message  // // = commented out  // commented out for muctache
 socket.on('newMessage', function(message) {
