@@ -1,5 +1,21 @@
 var socket = io();
     
+function scrollToBottom () {
+    //   Selectors
+    var messages = jQuery('#messages');
+    var newMessage = messages.children('li:last-child');
+    // Heights
+    var clientHeight = messages.prop('clientHeight');
+    var scrollTop = messages.prop('scrollTop');
+    var scrollHeight = messages.prop('scrollHeight'); 
+    var newMessageHeight = newMessage.innerHeight();
+    var lastMessageHeight = newMessage.prev().innerHeight();
+
+    if(clientHeight + scrollTop + lastMessageHeight + newMessageHeight >= scrollHeight) {
+        messages.scrollTop(scrollHeight);
+    }
+}
+
     // listener functions
     // ES6 arrow functions are now supported in all major browsers
     // socket.on('connect', () => {
@@ -30,6 +46,7 @@ socket.on('newMessage', function(message) {
         createdAt: formattedTime
     });
     jQuery('#messages').append(html);
+    scrollToBottom();
     
     // // console.log('New message from server ', message);
     
@@ -51,6 +68,7 @@ socket.on('newMessage', function(message) {
         createdAt: formattedTime
     });
     jQuery('#messages').append(html);
+    scrollToBottom();
 
         //  // Andrews method
         //  var formattedTime = moment(message.createdAt).format('h:mm a')
